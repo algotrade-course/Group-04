@@ -24,15 +24,79 @@ This `README.md` file serves as an example how a this will look like in a standa
 - Step 1 of the Nine-Step
 
 ## Data
-- Data source
-- Data type
-- Data period
-- How to get the input data?
-- How to store the output data?
+- **Data Source**: Historical VN30F1M index data fetched via the `vnstock`, provided by TCBS (Techcom Securities).
+- **Data Type**: Daily OHLC (Open, High, Low, Close) prices.
+- **Data Period**: January 1, 2020, to January 1, 2025.
+  - **In-sample**: 2020-01-01 to 2024-01-01 (for strategy development and optimization).
+  - **Out-of-sample**: 2024-01-01 to 2025-01-01 (for validation on unseen data).
+- **Input Data**: Data is fetched programmatically via the `Vnstock().stock(symbol="VN30F1M", source="TCBS").quote.history()` function for VN30F1M futures.
+- **Output Data**: Processed data stored in pandas DataFrames for analysis and backtesting.
+    - **In-memory**: Stored as pandas DataFrames during script execution for efficient computation and analysis.
+    - **Persistent Storage**: Saved to Excel files (`in_sample_VN30F1M.xlsx`, `out_sample_VN30F1M.xlsx`) for future use and reference.
 ### Data collection
-- Step 2 of the Nine-Step
+- **Process**: The `load_and_preprocess_data()` function fetches raw OHLC data for VN30F1M via the `vnstock`, splitting it into in-sample and out-of-sample periods based on the specified date range.
+```python
+def load_and_preprocess_data(symbol, start_date='2020-01-01', end_date='2025-01-01', split_date='2024-01-01'):
+    """
+    Load and preprocess VN30F1M or VN30 data from vnstock API.
+
+    Parameters:
+    - symbol (str): Ticker symbol ('VN30F1M' for futures).
+    - start_date (str): Start date for data retrieval (format: 'YYYY-MM-DD').
+    - end_date (str): End date for data retrieval (format: 'YYYY-MM-DD').
+    - split_date (str): Date to split in-sample and out-of-sample data (format: 'YYYY-MM-DD').
+
+    Returns:
+    - tuple: (in_sample_df, out_sample_df)
+        - in_sample_df (pd.DataFrame): Preprocessed in-sample data with OHLC columns.
+        - out_sample_df (pd.DataFrame): Preprocessed out-of-sample data with OHLC columns.
+    """
+    # Initialize vnstock client
+    stock = Vnstock().stock(symbol=symbol, source='TCBS')
+
+    # Fetch historical OHLC data
+    try:
+        data = stock.quote.history(start=start_date, end=end_date)
+    except Exception as e:
+        raise ValueError(f"Failed to fetch data for {symbol}: {str(e)}")
+
+    # Standardize column names (capitalize first letter)
+    data = data.rename(columns=lambda x: x.capitalize())
+
+    # Convert 'Time' column to datetime and set as index
+    data['Time'] = pd.to_datetime(data['Time'])
+    data = data.sort_values('Time').set_index('Time')
+
+    # Remove duplicates and handle missing values
+    data = data.drop_duplicates()
+    data = data.dropna(subset=['Open', 'High', 'Low', 'Close'])
+
+    # Split into in-sample and out-sample
+    split_timestamp = pd.Timestamp(split_date)
+    in_sample = data[data.index < split_timestamp]
+    out_sample = data[data.index >= split_timestamp]
+
+    # Ensure required columns are present
+    required_columns = ['Open', 'High', 'Low', 'Close']
+    for df in [in_sample, out_sample]:
+        if not all(col in df.columns for col in required_columns):
+            raise ValueError(f"Missing required columns in {symbol} data: {required_columns}")
+
+    return in_sample, out_sample
+```
 ### Data Processing
-- Step 3 of the Nine-Step
+- **Steps**:
+  1. Convert timestamps to a consistent format (e.g., `datetime` objects).
+  2. Remove duplicate entries based on the timestamp.
+  3. Set the timestamp as the DataFrame index.
+  4. Validate data integrity (e.g., no missing OHLC values).
+- **Output**: Cleaned DataFrames ready for indicator calculation and backtesting.
+
+| In-sample Data Graph | Out-sample Data Graph |
+|:---------------------------------------:|:---------------------------------------:|
+| ![In-sample Data Graph](images/in_sample_original.png){ width=400 } | ![Out-sample Dynamic Graph](images/out_sample_original.png){ width=400 } |
+
+
 
 ## Implementation
 - Briefly describe the implemetation.
