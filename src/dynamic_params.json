@@ -3,7 +3,7 @@
     "momentum_slow_ema": 15,
     "momentum_signal_ema": 5,
     "momentum_rsi_window": 10,
-    "momentum_rsi_threshold": 30,
+    "momentum_rsi_threshold": 20,
     "momentum_atr_window": 7,
     "reversion_fast_ema": 20,
     "reversion_slow_ema": 20,

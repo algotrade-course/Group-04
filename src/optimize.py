@@ -3,7 +3,7 @@ import itertools
 import argparse
 import pandas as pd
 import ta
-import tqdm
+from tqdm import tqdm
 from utils import (
     ASSET_VALUE, TAX, MARGIN_RATIO, ACCOUNT_RATIO, MULTIPLIER,
     holding_period_returns, maximum_drawdown, longest_drawdown, sharpe_ratio, sortino_ratio
@@ -18,7 +18,6 @@ def momentum_algo(
     slow_ema_window: int,
     ema_signal_window: int,
     rsi_window: int,
-    rsi_threshold: int,
     atr_window: int,
     atr_multiplier: float
     ) -> pd.DataFrame:
@@ -40,7 +39,6 @@ def momentum_algo(
         slow_ema_window (int): EMA window size for the slow component of the MACD.
         ema_signal_window (int): EMA window for the MACD signal line.
         rsi_window (int): Window size for the RSI indicator.
-        rsi_threshold (int): RSI threshold to define overbought/oversold conditions.
         atr_window (int): Window size for the Average True Range (ATR) calculation.
         atr_multiplier (float): Multiplier for ATR to compute stop-loss and take-profit levels.
 
@@ -85,13 +83,13 @@ def momentum_algo(
 
             if pos_type == 'LONG':
                 if (cur_price >= take_profit_price or cur_price <= stop_loss_price or
-                    row['RSI'] >= (100 - rsi_threshold) or row['MACD_diff'] < 0):
+                    row['RSI'] >= 80 or row['MACD_diff'] < 0):
                     # Closing a LONG position (selling)
                     cash += quantity * cur_price * price_multiplier - quantity * TAX * MULTIPLIER
                     holdings.remove(position)
             else:  # SHORT
                 if (cur_price <= take_profit_price or cur_price >= stop_loss_price or
-                    row['RSI'] <= rsi_threshold or row['MACD_diff'] > 0):
+                    row['RSI'] <= 20 or row['MACD_diff'] > 0):
                     # Closing a SHORT position (buying back)
                     cash -= quantity * cur_price * price_multiplier + quantity * TAX * MULTIPLIER
                     holdings.remove(position)
@@ -108,7 +106,7 @@ def momentum_algo(
         if not holdings:
 
             # LONG position entry conditions
-            if row['MACD_diff'] > 0 and 50 < row['RSI'] < (100 - rsi_threshold):
+            if row['MACD_diff'] > 0 and 50 < row['RSI'] < 80:
                 # Use half of cash, accounting for TAX
                 quantity = floor((cash / 2) / (cur_price * price_multiplier))
                 if quantity > 0:
@@ -118,7 +116,7 @@ def momentum_algo(
                     holdings.append((date, 'LONG', cur_price, quantity, stop_loss_price, take_profit_price))
 
             # SHORT position entry conditions
-            elif row['MACD_diff'] < 0 and rsi_threshold < row['RSI'] < 50:
+            elif row['MACD_diff'] < 0 and 20 < row['RSI'] < 50:
                 # Use half of cash to determine quantity
                 quantity = min(floor((cash / 2) / (cur_price * price_multiplier)), 3)
                 if quantity > 0:
@@ -137,7 +135,6 @@ def dynamic_momentum_algo(
     slow_ema_window: int,
     ema_signal_window: int,
     rsi_window: int,
-    rsi_threshold: int,
     atr_window: int
     ) -> pd.DataFrame:
     """
@@ -155,7 +152,6 @@ def dynamic_momentum_algo(
         slow_ema_window (int): Slow EMA window size for MACD calculation.
         ema_signal_window (int): Signal line EMA window size for MACD.
         rsi_window (int): Rolling window size for the RSI indicator.
-        rsi_threshold (int): RSI cutoff used for both entry and exit conditions (upper and lower band symmetry).
         atr_window (int): Rolling window size for ATR calculation used in position sizing and risk control.
 
     Returns:
@@ -204,13 +200,13 @@ def dynamic_momentum_algo(
 
             if pos_type == 'LONG':
                 if (cur_price >= take_profit_price or cur_price <= stop_loss_price or
-                    row['RSI'] >= (100 - rsi_threshold) or row['MACD_diff'] < 0):
+                    row['RSI'] >= 80 or row['MACD_diff'] < 0):
                     # Closing a LONG position (selling)
                     cash += quantity * cur_price * price_multiplier - quantity * TAX * MULTIPLIER
                     holdings.remove(position)
             else:  # SHORT
                 if (cur_price <= take_profit_price or cur_price >= stop_loss_price or
-                    row['RSI'] <= rsi_threshold or row['MACD_diff'] > 0):
+                    row['RSI'] <= 20 or row['MACD_diff'] > 0):
                     # Closing a SHORT position (buying back)
                     cash -= quantity * cur_price * price_multiplier + quantity * TAX * MULTIPLIER
                     holdings.remove(position)
@@ -227,7 +223,7 @@ def dynamic_momentum_algo(
         if not holdings:
 
             # LONG position entry conditions
-            if row['MACD_diff'] > 0 and 50 < row['RSI'] < (100 - rsi_threshold):
+            if row['MACD_diff'] > 0 and 50 < row['RSI'] < 80:
                 # Use half of cash, accounting for TAX
                 quantity = floor((cash / 2) / (cur_price * price_multiplier))
                 if quantity > 0:
@@ -237,7 +233,7 @@ def dynamic_momentum_algo(
                     holdings.append((date, 'LONG', cur_price, quantity, stop_loss_price, take_profit_price))
 
             # SHORT position entry conditions
-            elif row['MACD_diff'] < 0 and rsi_threshold < row['RSI'] < 50:
+            elif row['MACD_diff'] < 0 and 20 < row['RSI'] < 50:
                 # Use half of cash to determine quantity
                 quantity = min(floor((cash / 2) / (cur_price * price_multiplier)), 3)
                 if quantity > 0:
@@ -486,28 +482,26 @@ def momentum_optimize(data: pd.DataFrame) -> pd.DataFrame:
     slow_ema_range = range(20, 30)
     ema_signal_range = range(7, 10)
     rsi_range = range(2, 8)
-    rsi_threshold_range = [20, 25, 30]
     atr_range = range(8, 20)
     atr_multiplier_range = [2.0, 2.5, 3.0]
 
     # Generate all possible parameter combinations
     param_combinations = list(itertools.product(
         fast_ema_range, slow_ema_range, ema_signal_range,
-        rsi_range, rsi_threshold_range,
-        atr_range, atr_multiplier_range
+        rsi_range, atr_range, atr_multiplier_range
     ))
 
     # Preallocate DataFrame with correct size
     table = pd.DataFrame(index = range(len(param_combinations)), columns = [
-        'Fast EMA Window', 'Slow EMA Window', 'EMA Signal Window', 'RSI Window', 'RSI Threshold', 'ATR Window', 'ATR Multiplier',
+        'Fast EMA Window', 'Slow EMA Window', 'EMA Signal Window', 'RSI Window', 'ATR Window', 'ATR Multiplier',
         'Accumulate Rate', 'Maximum Drawdown', 'Longest Drawdown', 'Sharpe Ratio', 'Sortino Ratio',
         'Score'
     ])
 
     # Loop through combinations with tqdm progress bar
-    for index, (f, s, e, r, r_t, a, a_m) in tqdm(enumerate(param_combinations), total=len(param_combinations), desc="Optimizing"):
-        params = (f, s, e, r, r_t, a, a_m)
-        result = momentum_algo(data, f, s, e, r, r_t, a, a_m)
+    for index, (f, s, e, r, a, a_m) in tqdm(enumerate(param_combinations), total=len(param_combinations), desc="Optimizing"):
+        params = (f, s, e, r, a, a_m)
+        result = momentum_algo(data, f, s, e, r, a, a_m)
 
         hpr = holding_period_returns(result)
         mdd = maximum_drawdown(result)
@@ -527,26 +521,25 @@ def dynamic_momentum_optimize(data: pd.DataFrame) -> pd.DataFrame:
     slow_ema_range = range(20, 30)
     ema_signal_range = range(7, 10)
     rsi_range = range(2, 10)
-    rsi_threshold_range = [20, 25, 30]
     atr_range = range(8, 20)
 
     # Generate all possible parameter combinations
     param_combinations = list(itertools.product(
         fast_ema_range, slow_ema_range, ema_signal_range,
-        rsi_range, rsi_threshold_range, atr_range
+        rsi_range, atr_range
     ))
 
     # Preallocate DataFrame with correct size
     table = pd.DataFrame(index = range(len(param_combinations)), columns = [
-        'Fast EMA Window', 'Slow EMA Window', 'EMA Signal Window', 'RSI Window', 'RSI Threshold', 'ATR Window',
+        'Fast EMA Window', 'Slow EMA Window', 'EMA Signal Window', 'RSI Window', 'ATR Window',
         'Accumulate Rate', 'Maximum Drawdown', 'Longest Drawdown', 'Sharpe Ratio', 'Sortino Ratio',
         'Score'
     ])
 
     # Loop through combinations with tqdm progress bar
-    for index, (f, s, e, r, r_t, a) in tqdm(enumerate(param_combinations), total=len(param_combinations), desc="Optimizing"):
-        params = (f, s, e, r, r_t, a)
-        result = dynamic_momentum_algo(data, f, s, e, r, r_t, a)
+    for index, (f, s, e, r, a) in tqdm(enumerate(param_combinations), total=len(param_combinations), desc="Optimizing"):
+        params = (f, s, e, r, a)
+        result = dynamic_momentum_algo(data, f, s, e, r, a)
 
         hpr = holding_period_returns(result)
         mdd = maximum_drawdown(result)
