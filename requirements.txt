@@ -1,0 +1,10 @@
+requests
+bs4
+IPython
+numpy
+matplotlib
+pandas
+tqdm
+vnstock
+ta
+optuna
