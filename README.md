@@ -219,8 +219,21 @@ def process_split_data(data: pd.DataFrame, split_date='2024-01-01'):
    ```
    - The default values are:
         - `data_file`: 'in_sample.csv'
-        - `algo`: 'static'
         - `params_file`: 'params.json'
+
+6. Run the optimization script:
+   ```bash
+   python optimize.py --data data_file --algo static_momentum/dynamic_momentum/static_reversion/dynamic_reversion
+   ```
+    - The default values are:
+          - `data_file`: 'in_sample.csv'
+
+7. Run the optimization with Optuna script:
+    ```bash
+    python optimize_optuna.py --data data_file --algo static/dynamic
+    ```
+    - The default values are:
+          - `data_file`: 'in_sample.csv'
 
 ### Overview
 
