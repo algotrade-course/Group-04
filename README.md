@@ -226,6 +226,7 @@ def process_split_data(data: pd.DataFrame, split_date='2024-01-01'):
    python optimize.py --data data_file --algo static_momentum/dynamic_momentum/static_reversion/dynamic_reversion
    ```
     - The default values are:
+    
           - `data_file`: 'in_sample.csv'
 
 7. Run the optimization with Optuna script:
@@ -233,6 +234,7 @@ def process_split_data(data: pd.DataFrame, split_date='2024-01-01'):
     python optimize_optuna.py --data data_file --algo static/dynamic
     ```
     - The default values are:
+
           - `data_file`: 'in_sample.csv'
 
 ### Overview
@@ -489,11 +491,23 @@ REVERSION_ATR_WINDOW = 7
 
 ### In-sample Backtesting Result
 - Non-dynamic algorithm result:
+    - Holding Period Return: 28.74%
+    - Maximum Drawdown: -7.53%
+    - Longest Drawdown Duration: 185 days
+    - Sharpe Ratio: 0.421134
+    - Sortino Ratio: -0.856178
+
 ![insample report](images/1.png)
 ![insample report](images/2.png)
 ![insample report](images/3.png)
 
-- Dynamic algorithm result
+- Dynamic algorithm result:
+    - Holding Period Return: 30.13%
+    - Maximum Drawdown: -7.45%
+    - Longest Drawdown Duration: 185 days
+    - Sharpe Ratio: 0.454131
+    - Sortino Ratio: -0.851165
+
 ![insample report](images/4.png)
 ![insample report](images/5.png)
 ![insample report](images/6.png)
@@ -532,12 +546,24 @@ where:
 - $sortino$: The Sortino Ratio of the portfolio
 
 ### Original Optimization Result
-- Non-dynamic algorithm result
+- Non-dynamic algorithm result:
+    - Holding Period Return: 17.85%
+    - Maximum Drawdown: -12.71%
+    - Longest Drawdown Duration: 310 days
+    - Sharpe Ratio: 0.156780
+    - Sortino Ratio: -0.893145
+
 ![report](images/7.png)
 ![report](images/8.png)
 ![report](images/9.png)
 
-- Dynamic algorithm result
+- Dynamic algorithm result:
+    - Holding Period Return: 23.93%
+    - Maximum Drawdown: -11.27%
+    - Longest Drawdown Duration: 729 days
+    - Sharpe Ratio: 0.276436
+    - Sortino Ratio: -0.866013
+
 ![report](images/10.png)
 ![report](images/11.png)
 ![report](images/12.png)
@@ -557,17 +583,27 @@ where:
 | **ATR Multiplier** | 0.5 to 10.0 | 0.5 to 10.0 |
 
 ### Optimization with Optuna Result
-- Non-dynamic algorithm result
+- Non-dynamic algorithm result:
+    - Holding Period Return: 64.53%
+    - Maximum Drawdown: -10.03%
+    - Longest Drawdown Duration: 415 days
+    - Sharpe Ratio: 0.871392
+    - Sortino Ratio: -0.72175
+
 ![report](images/13.png)
 ![report](images/14.png)
 ![report](images/15.png)
 
-- Dynamic algorithm result
+- Dynamic algorithm result:
+    - Holding Period Return: 52.61%
+    - Maximum Drawdown: -7.12%
+    - Longest Drawdown Duration: 198 days
+    - Sharpe Ratio: 0.781190
+    - Sortino Ratio: -0.7651
+
 ![report](images/16.png)
 ![report](images/17.png)
 ![report](images/18.png)
-
-- Has link to the Optimization Report
 
 ## Out-of-sample Backtesting
 ### Parameter
@@ -621,15 +657,49 @@ REVERSION_ATR_WINDOW = 5
 ### Step 6 of th Nine-Step
 
 ### Out-of-sample Backtesting Reuslt
-- Non-dynamic algorithm result
+- Non-dynamic optimized result:
+    - Holding Period Return: 2.62%
+    - Maximum Drawdown: -2.51%
+    - Longest Drawdown Duration: 111 days
+    - Sharpe Ratio: -0.069081
+    - Sortino Ratio: -0.942477
+
 ![outsample report](images/19.png)
 ![outsample report](images/20.png)
 ![outsample report](images/21.png)
 
-- Dynamic algorithm result
+- Dynamic optimized result:
+    - Holding Period Return: -6.10%
+    - Maximum Drawdown: -6.53%
+    - Longest Drawdown Duration: 207 days
+    - Sharpe Ratio: -1.639790
+    - Sortino Ratio: -1.110371
+
 ![outsample report](images/22.png)
 ![outsample report](images/23.png)
 ![outsample report](images/24.png)
+
+- Non-dynamic Optuna result:
+    - Holding Period Return: 0.95%
+    - Maximum Drawdown: -3.38%
+    - Longest Drawdown Duration: 112 days
+    - Sharpe Ratio: -0.337140
+    - Sortino Ratio: -0.971601
+
+![outsample report](images/25.png)
+![outsample report](images/26.png)
+![outsample report](images/27.png)
+
+- Dynamic Optuna result:
+    - Holding Period Return: -4.51%
+    - Maximum Drawdown: -5.55%
+    - Longest Drawdown Duration: 207 days
+    - Sharpe Ratio: -1.383992
+    - Sortino Ratio: -1.07914
+
+![outsample report](images/28.png)
+![outsample report](images/29.png)
+![outsample report](images/30.png)
 
 
 ## Reference
