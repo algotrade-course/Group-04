@@ -244,7 +244,7 @@ def dynamic_algo(
 
         # Determine ATR multiplier based on volatility trend
         if row['ATR_mom_short'] > row['ATR_mom_long']:
-            momentum_atr_multiplier = 3.0  # Higher volatility → wider SL/TP
+            momentum_atr_multiplier = 2.0  # Higher volatility → wider SL/TP
         else:
             momentum_atr_multiplier = 2.0  # Lower volatility → tighter SL/TP
         if row['ATR_rev_short'] > row['ATR_rev_long']:

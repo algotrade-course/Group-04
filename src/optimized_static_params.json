@@ -1,0 +1,15 @@
+{
+    "momentum_fast_ema": 8,
+    "momentum_slow_ema": 23,
+    "momentum_signal_ema": 7,
+    "momentum_rsi_window": 6,
+    "momentum_rsi_threshold": 20,
+    "momentum_atr_window": 8,
+    "momentum_atr_multiplier": 3.0,
+    "reversion_fast_ema": 19,
+    "reversion_slow_ema": 39,
+    "reversion_signal_ema": 14,
+    "reversion_rsi_window": 14,
+    "reversion_atr_window": 14,
+    "reversion_atr_multiplier": 2.0
+}
