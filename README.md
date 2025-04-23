@@ -181,6 +181,47 @@ def process_split_data(data: pd.DataFrame, split_date='2024-01-01'):
 
 ## Implementation
 
+### Environment Setup
+
+1. Setup a virtual Python environment:
+   ```bash
+   python -m venv mommean
+   source mommean/bin/activate  # On Windows use `mommean\Scripts\activate`
+   ```
+
+2. Install required libraries:
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+
+3. Change the working directory to the scripts folder:
+    ```bash
+    cd src
+    ```
+
+4. Data collection and processing:
+    - The sample data is saved to `in_sample_VN30F1M.csv` and `out_sample_VN30F1M.csv` files.
+    - You can also load data manually by running the 'data_loader.py' script as follows:
+    ```bash
+    python data_loader.py --symbol sym --start_date start --end_date end --split_date split
+    ```
+    - The default values are:
+        - `sym`: 'VN30F1M'
+        - `start`: '2020-01-01'
+        - `end`: '2025-01-01'
+        - `split`: '2024-01-01'
+    - The script will save the data to `in_sample.csv` and `out_sample.csv` files.
+
+5. Run the backtesting script:
+   ```bash
+   python backtest.py --data data_file --algo static/dynamic --params params_file
+   ```
+   - The default values are:
+        - `data_file`: 'in_sample.csv'
+        - `algo`: 'static'
+        - `params_file`: 'params.json'
+
 ### Overview
 
 This module implements two trading strategies:
@@ -445,7 +486,7 @@ REVERSION_ATR_WINDOW = 7
 ![insample report](images/6.png)
 
 
-## Optimization
+## Original Optimization
 - We implement optimization by manually doing a grid search loop through every possible set of values for each parameters.
 - Each strategy has their own set of parameters, as stated below:
     - MACD: `Fast EMA Window`, `Slow EMA Window`, `EMA Signal Window`
@@ -467,16 +508,17 @@ REVERSION_ATR_WINDOW = 7
 
 - Since each algorithm has more than 10 parameters and most of them has the range of about 5 to 10 values, doing grid search for both strategy at the same time is not possible. Hence, we decide to optimize each strategy independently, then combine the best parameters of each strategy into a single set of best parameters for each algorithm.
 - During optimization, our loss function is defined as follow:
+
 $\displaystyle y = hpr + \frac{mdd}{10} - \frac{ldd}{100} + \left(\frac{sharpe + sortino}{2}\right) ^ 3$
 
-    where:
-    - $hpr$: The Holding Period Return of the portfolio
-    - $mdd$: The Maximum Drawdown of the portfolio
-    - $ldd$: The Longest Drawdown of the portfolio
-    - $sharpe$: The Sharpe Ratio of the portfolio
-    - $sortino$: The Sortino Ratio of the portfolio
+where:
+- $hpr$: The Holding Period Return of the portfolio
+- $mdd$: The Maximum Drawdown of the portfolio
+- $ldd$: The Longest Drawdown of the portfolio
+- $sharpe$: The Sharpe Ratio of the portfolio
+- $sortino$: The Sortino Ratio of the portfolio
 
-### Optimization Result
+### Original Optimization Result
 - Non-dynamic algorithm result
 ![report](images/7.png)
 ![report](images/8.png)
