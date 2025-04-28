@@ -1,3 +1,5 @@
+![Static Badge](https://img.shields.io/badge/PLUTUS-65%25-%23BA8E23)
+
 ## Abstract
 <!-- - Summarize the project: motivation, methods, findings, etc.  -->
 
