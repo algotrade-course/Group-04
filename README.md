@@ -177,7 +177,7 @@ def process_split_data(data: pd.DataFrame, split_date='2024-01-01'):
 
 | In-sample Data Graph | Out-sample Data Graph |
 |:---------------------------------------:|:---------------------------------------:|
-| ![In-sample Data Graph](images/in_sample_original.png){ width=400 } | ![Out-sample Dynamic Graph](images/out_sample_original.png){ width=400 } |
+| ![In-sample Data Graph](./images/in_sample_original.png) | ![Out-sample Dynamic Graph](./images/out_sample_original.png) |
 
 
 
