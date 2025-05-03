@@ -349,7 +349,7 @@ python backtest.py --data data_file --dynamic true/false --params params_file
 
 ### Parameters
 ```python
-# Static Parameters
+# Non-dynamic Parameters
 MOMENTUM_FAST_EMA = 10
 MOMENTUM_SLOW_EMA = 15
 MOMENTUM_SIGNAL_EMA = 5
@@ -395,7 +395,7 @@ REVERSION_ATR_WINDOW = 7
 | 2023-12-29 | 1133.2 | 1139.5 | 1130.9 | 1134.6 | 160159 |
 
 ### In-sample Backtesting Result
-- Static algorithm result:
+- Non-dynamic algorithm result:
     - Holding Period Return: 28.74%
     - Maximum Drawdown: -7.53%
     - Longest Drawdown Duration: 185 days
@@ -425,7 +425,7 @@ REVERSION_ATR_WINDOW = 7
     - RSI: `RSI Window`
     - ATR: `ATR Window`
 - For Price Momentum strategy, it has an additional parameter of `RSI Threshold` to decide the exit condition.
-- Each strategy from the Static-ATR algorithm also has an additional parameter of `ATR Multiplier` to set the take profit/cut loss thresholds.
+- Each strategy from the non-dynamic-ATR algorithm also has an additional parameter of `ATR Multiplier` to set the take profit/cut loss thresholds.
 - The details for the range of each parameter, correspondng to each strategy is specified in the table below:
 
 | Parameter | Price Momentum Range | Mean-Reversion Range |
@@ -477,7 +477,7 @@ python optimize.py --data data_file --algo trading_algo
     ```
 ### Parameters
 ```python
-# Static Parameters
+# Non-dynamic Parameters
 MOMENTUM_FAST_EMA = 8
 MOMENTUM_SLOW_EMA = 23
 MOMENTUM_SIGNAL_EMA = 7
@@ -507,7 +507,7 @@ REVERSION_SIGNAL_EMA = 8
 REVERSION_RSI_WINDOW = 10
 REVERSION_ATR_WINDOW = 6
 ```
-- Static algorithm result:
+- Non-dynamic algorithm result:
     - Holding Period Return: 17.85%
     - Maximum Drawdown: -12.71%
     - Longest Drawdown Duration: 310 days
@@ -562,7 +562,7 @@ python optimize_optuna.py --data data_file --dynamic true/false
     ```
 
 ### Optimization with Optuna Result
-- Static algorithm result:
+- Non-dynamic algorithm result:
     - Holding Period Return: 64.53%
     - Maximum Drawdown: -10.03%
     - Longest Drawdown Duration: 415 days
@@ -603,7 +603,7 @@ python backtest.py --data in_sample.csv --dynamic true --params optuna_dynamic_p
 ```
 ### Parameter
 ```python
-# Static Parameters
+# Non-dynamic Parameters
 MOMENTUM_FAST_EMA = 3
 MOMENTUM_SLOW_EMA = 27
 MOMENTUM_SIGNAL_EMA = 6
@@ -672,7 +672,7 @@ REVERSION_ATR_WINDOW = 5
 ![outsample report](images/23.png)
 ![outsample report](images/24.png)
 
-- Static Optuna result:
+- Non-dynamic Optuna result:
     - Holding Period Return: 0.95%
     - Maximum Drawdown: -3.38%
     - Longest Drawdown Duration: 112 days
