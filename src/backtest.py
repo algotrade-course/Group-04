@@ -330,8 +330,10 @@ def dynamic_algo(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Backtest a trading strategy using historical data.")
     parser.add_argument('--data', type=str, default='in_sample.csv', help='Path to the CSV file containing OHLC data.')
-    parser.add_argument('--algo', type=str, choices=['static', 'dynamic'], required=True, help='Type of algorithm: "static" or "dynamic".')
-    parser.add_argument('--params', type=str, default='params.json', help='Path to the JSON file with strategy parameters.')
+    parser.add_argument(
+        '--dynamic', type=str, choices=['true', 'false'], required=True, help='Type of algorithm: dynamic (true) or non-dynamic(false).'
+    )
+    parser.add_argument('--params', type=str, required=True, help='Path to the JSON file with strategy parameters.')
 
     args = parser.parse_args()
 
@@ -343,10 +345,9 @@ if __name__ == "__main__":
         params = json.load(f)
 
     # Run selected algorithm
-    if args.algo == 'static':
+    if args.dynamic == 'true':
         result = algo(data, **params)
-    elif args.algo == 'dynamic':
-        result = dynamic_algo(data, **params)
+    else: result = dynamic_algo(data, **params)
     
     print("\n=== Backtest Performance Metrics ===")
 
