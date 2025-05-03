@@ -1,3 +1,5 @@
+![Static Badge](https://img.shields.io/badge/PLUTUS-65%25-%23BA8E23)
+
 ## Abstract
 
 This project develops and evaluates trading algorithms for VN30F1M futures, a derivative tied to Vietnam’s VN30 index, aiming to achieve consistent profitability in dynamic market conditions. Two strategies are implemented: an original algorithm using fixed parameters for the Moving Average Convergence Divergence (MACD), Relative Strength Index (RSI), and Average True Range (ATR) indicators, and a dynamic variant that adjusts ATR-based risk levels based on short-term versus long-term volatility. Historical data from 2020 to 2024 is utilized, with in-sample testing (2020–2023) for strategy development and out-of-sample testing (2024) for validation. Through grid search optimization, key parameters are tuned to maximize returns while controlling risk. Results indicate that both strategies generate positive returns, with the dynamic algorithm outperforming the original by adapting to volatility shifts, achieving higher Holding Period Returns (HPR) and lower Maximum Drawdowns (MDD). The findings suggest that volatility-adaptive strategies enhance trading performance, though success remains sensitive to market trends, highlighting the need for ongoing refinement.
@@ -347,7 +349,7 @@ python backtest.py --data data_file --dynamic true/false --params params_file
 
 ### Parameters
 ```python
-# Non-dynamic Parameters
+# Static Parameters
 MOMENTUM_FAST_EMA = 10
 MOMENTUM_SLOW_EMA = 15
 MOMENTUM_SIGNAL_EMA = 5
@@ -393,7 +395,7 @@ REVERSION_ATR_WINDOW = 7
 | 2023-12-29 | 1133.2 | 1139.5 | 1130.9 | 1134.6 | 160159 |
 
 ### In-sample Backtesting Result
-- Non-dynamic algorithm result:
+- Static algorithm result:
     - Holding Period Return: 28.74%
     - Maximum Drawdown: -7.53%
     - Longest Drawdown Duration: 185 days
@@ -423,7 +425,7 @@ REVERSION_ATR_WINDOW = 7
     - RSI: `RSI Window`
     - ATR: `ATR Window`
 - For Price Momentum strategy, it has an additional parameter of `RSI Threshold` to decide the exit condition.
-- Each strategy from the non-dynamic-ATR algorithm also has an additional parameter of `ATR Multiplier` to set the take profit/cut loss thresholds.
+- Each strategy from the Static-ATR algorithm also has an additional parameter of `ATR Multiplier` to set the take profit/cut loss thresholds.
 - The details for the range of each parameter, correspondng to each strategy is specified in the table below:
 
 | Parameter | Price Momentum Range | Mean-Reversion Range |
@@ -475,7 +477,7 @@ python optimize.py --data data_file --algo trading_algo
     ```
 ### Parameters
 ```python
-# Non-dynamic Parameters
+# Static Parameters
 MOMENTUM_FAST_EMA = 8
 MOMENTUM_SLOW_EMA = 23
 MOMENTUM_SIGNAL_EMA = 7
@@ -505,7 +507,7 @@ REVERSION_SIGNAL_EMA = 8
 REVERSION_RSI_WINDOW = 10
 REVERSION_ATR_WINDOW = 6
 ```
-- Non-dynamic algorithm result:
+- Static algorithm result:
     - Holding Period Return: 17.85%
     - Maximum Drawdown: -12.71%
     - Longest Drawdown Duration: 310 days
@@ -560,7 +562,7 @@ python optimize_optuna.py --data data_file --dynamic true/false
     ```
 
 ### Optimization with Optuna Result
-- Non-dynamic algorithm result:
+- Static algorithm result:
     - Holding Period Return: 64.53%
     - Maximum Drawdown: -10.03%
     - Longest Drawdown Duration: 415 days
@@ -601,7 +603,7 @@ python backtest.py --data in_sample.csv --dynamic true --params optuna_dynamic_p
 ```
 ### Parameter
 ```python
-# Non-dynamic Parameters
+# Static Parameters
 MOMENTUM_FAST_EMA = 3
 MOMENTUM_SLOW_EMA = 27
 MOMENTUM_SIGNAL_EMA = 6
@@ -670,7 +672,7 @@ REVERSION_ATR_WINDOW = 5
 ![outsample report](images/23.png)
 ![outsample report](images/24.png)
 
-- Non-dynamic Optuna result:
+- Static Optuna result:
     - Holding Period Return: 0.95%
     - Maximum Drawdown: -3.38%
     - Longest Drawdown Duration: 112 days
