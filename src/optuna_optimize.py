@@ -51,7 +51,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Optimize a trading strategy using historical data.")
     parser.add_argument('--data', type=str, default='in_sample.csv', help='Path to the CSV file containing OHLC data.')
     parser.add_argument(
-        '--algo', type=str, choices=['static', 'dynamic'], required=True, help='Type of algorithm to run: "static" or "dynamic".'
+        '--dynamic', type=str, choices=['true', 'false'], help='Use dynamic optimization (true) or non-dynamic optimization (false).'
     )
 
     args = parser.parse_args()
@@ -59,10 +59,10 @@ if __name__ == "__main__":
     # Load data
     data = pd.read_csv(args.data, index_col=0, parse_dates=True)
 
-    if args.algo == 'static':
+    if args.dynamic == 'true':
         study = optuna.create_study(direction='maximize', study_name="opt_VN30F1M")
         study.optimize(lambda t: objective(t, data), n_trials=100000, timeout=600)
-    elif args.algo == 'dynamic':
+    else:
         study = optuna.create_study(direction='maximize', study_name="opt_VN30F1M_dynamic")
         study.optimize(lambda t: dynamic_objective(t, data), n_trials=100000, timeout=600)
 

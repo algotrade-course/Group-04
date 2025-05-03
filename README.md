@@ -1,13 +1,8 @@
 ## Abstract
-<!-- - Summarize the project: motivation, methods, findings, etc.  -->
 
 This project develops and evaluates trading algorithms for VN30F1M futures, a derivative tied to Vietnam’s VN30 index, aiming to achieve consistent profitability in dynamic market conditions. Two strategies are implemented: an original algorithm using fixed parameters for the Moving Average Convergence Divergence (MACD), Relative Strength Index (RSI), and Average True Range (ATR) indicators, and a dynamic variant that adjusts ATR-based risk levels based on short-term versus long-term volatility. Historical data from 2020 to 2024 is utilized, with in-sample testing (2020–2023) for strategy development and out-of-sample testing (2024) for validation. Through grid search optimization, key parameters are tuned to maximize returns while controlling risk. Results indicate that both strategies generate positive returns, with the dynamic algorithm outperforming the original by adapting to volatility shifts, achieving higher Holding Period Returns (HPR) and lower Maximum Drawdowns (MDD). The findings suggest that volatility-adaptive strategies enhance trading performance, though success remains sensitive to market trends, highlighting the need for ongoing refinement.
 
 ## Introduction
-<!-- - Briefly introduce the project.
-- Problem statement, research question or the hypothesis.
-- Method(s) to solve the problem
-- What are the results? -->
 
 The VN30F1M futures contract, representing leveraged exposure to Vietnam’s VN30 index, offers significant opportunities for systematic trading due to its liquidity and volatility. This project aims to design and backtest trading algorithms that exploit price movements in VN30F1M futures while managing risk effectively. The central research question is: *Can a combination of MACD, RSI, and ATR indicators form a robust trading strategy that outperforms a buy-and-hold approach across diverse market conditions?*
 
@@ -17,8 +12,6 @@ Preliminary results show that both strategies yield positive returns, with the d
 
 
 ## Related Work
-<!-- - Prerequisite reading if the audience needs knowledge before exploring the project.
-- Optional -->
 
 The development of systematic trading strategies for financial instruments like futures has long been a cornerstone of quantitative finance. This project leverages established principles from technical analysis, futures trading, and algorithmic backtesting, applying them to the VN30F1M futures contract—a monthly derivative tied to Vietnam’s VN30 index. Here, we outline the foundational concepts and prior work that inform our approach, setting the stage for the project’s contributions.
 
@@ -28,30 +21,6 @@ Technical analysis uses historical price and volume data to predict market movem
 - **Relative Strength Index (RSI)**: Introduced by J. Welles Wilder in 1978, RSI measures momentum on a 0–100 scale, flagging overbought (above 70) or oversold (below 30) conditions. While effective in range-bound markets, RSI may generate false signals during strong trends.
 - **Average True Range (ATR)**: Also by Wilder, ATR measures volatility by averaging the true range over a period (typically 14 days). It’s widely used to set dynamic stop-loss and take-profit levels, adapting to market conditions.
 These indicators are often applied individually or in basic pairs. This project, however, integrates MACD for trend detection, RSI for momentum confirmation, and ATR for risk management, creating a more comprehensive framework for trading signals and position sizing.
-
-### Futures Trading and VN30F1M
-
-Futures contracts are agreements to trade an asset at a set price on a future date. The VN30F1M, tied to the VN30 index of the top 30 stocks on the Ho Chi Minh Stock Exchange, is a popular instrument in Vietnam due to its leverage and hedging potential (Ho Chi Minh Stock Exchange, 2023).
-
-While extensive research exists on global futures like the S&P 500, studies on VN30F1M are scarce. Emerging market research suggests volatility-based strategies may thrive in such contexts. This project fills a gap by tailoring technical indicators to VN30F1M, with a focus on volatility adaptation.
-
-### Backtesting Methodologies
-
-Backtesting evaluates trading strategies using historical data, emphasizing:
-- **Data Quality**: Clean, bias-free data is critical.
-- **Transaction Costs**: Slippage and commissions must be factored.
-- **Risk Metrics**: Metrics like Maximum Drawdown and Sharpe Ratio assess performance.
-
-This project follows these principles, using cleaned VN30F1M data, incorporating costs (e.g., taxes), and applying in-sample/out-of-sample testing to ensure robustness and avoid overfitting.
-
-### Algorithmic Trading Strategies
-
-Algorithmic trading spans simple moving average systems to complex learning. Indicator-based strategies remain prevalent for their transparency and practicality. Recent work shows:
-- Combining MACD and RSI reduces false signals.
-- ATR-based stop-losses enhance risk control in trend strategies.
-
-This project builds on these insights, applying a multi-indicator approach to VN30F1M with a novel twist: a dynamic ATR that adjusts risk based on short- and long-term volatility. This aims to improve performance in Vietnam’s dynamic market.
-
 
 ## Trading Hypotheses
 - Our initial asset is set at 200,000,000 VND.
@@ -64,7 +33,7 @@ This project builds on these insights, applying a multi-indicator approach to VN
 - We apply MACD and RSI as our trend indicator and momentum indicator, respectively.
 - A volatility indicator, ATR, is also employed for risk management. For exploring purpose, we design two seperate algorithms:
     - One with a set ATR-multiplier.
-    - One with a dynamic ATR-multiplier based on a long and a short ATR window.
+    - One with a dynamic ATR-multiplier based on a long and a short ATR window. This aims to improve performance in Vietnamese dynamic market.
 - Each strategy has their own set of MACD, RSI and ATR parameters, with the condition specified below:
 
 | Strategy | Position Type | Entry Conditions | Exit Conditions |
@@ -87,101 +56,7 @@ This project builds on these insights, applying a multi-indicator approach to VN
 - We open at most 3 SHORT positions for each strategy, depending on the current asset value assigned to it.
 - For LONG positions, when conditions are met, each strategy will use up their shared amount.
 
-## Data
-- **Data Source**: Historical VN30F1M index data fetched via the `vnstock`, provided by TCBS (Techcom Securities).
-- **Data Type**: Daily OHLC (Open, High, Low, Close) prices.
-- **Data Period**: January 1, 2020, to January 1, 2025.
-  - **In-sample**: 2020-01-01 to 2024-01-01 (for strategy development and optimization).
-  - **Out-of-sample**: 2024-01-01 to 2025-01-01 (for validation on unseen data).
-- **Input Data**: Data is fetched programmatically via the `Vnstock().stock(symbol="VN30F1M", source="TCBS").quote.history()` function for VN30F1M futures.
-- **Output Data**: Processed data stored in pandas DataFrames for analysis and backtesting.
-    - **In-memory**: Stored as pandas DataFrames during script execution for efficient computation and analysis.
-    - **Persistent Storage**: Saved to Excel files (`in_sample_VN30F1M.xlsx`, `out_sample_VN30F1M.xlsx`) for future use and reference.
-### Data collection
-- **Process**: The `load_data` function fetches raw OHLC data for VN30F1M via the `vnstock`.
-```python
-def load_data(symbol, start_date='2020-01-01', end_date='2025-01-01'):
-    """
-    Load data from vnstock.
-
-    Parameters:
-    - symbol (str): Ticker symbol ('VN30F1M' for futures).
-    - start_date (str): Start date for data retrieval (format: 'YYYY-MM-DD').
-    - end_date (str): End date for data retrieval (format: 'YYYY-MM-DD').
-
-    Returns:
-    - data (pd.DataFrame): data with OHLC columns.
-    """
-    # Initialize vnstock client
-    stock = Vnstock().stock(symbol=symbol, source='TCBS')
-
-    # Fetch historical OHLC data
-    try:
-        data = stock.quote.history(start=start_date, end=end_date)
-    except Exception as e:
-        raise ValueError(f"Failed to fetch data for {symbol}: {str(e)}")
-
-    return data
-```
-### Data Processing
-- **Steps**:
-    - Standardize column names.
-    - Convert 'Time' column to datetime and set as index.
-    - Remove duplicates and handle missing values.
-    - Split into in-sample and out-of-sample.
-    - Validate data integrity (no missing OHLC values).
-- **Output**:
-    - In-sample data and Out-sample data with OHLC columns.
-
-```python
-def process_split_data(data: pd.DataFrame, split_date='2024-01-01'):
-    """
-    Process and split data for backtesting.
-
-    Parameters:
-    - data (pd.DataFrame): Raw data with OHLC columns.
-    - split_date (str): Date to split in-sample and out-of-sample data (format: 'YYYY-MM-DD').
-
-    Returns:
-    - tuple: (in_sample_df, out_sample_df)
-        - in_sample_df (pd.DataFrame): Preprocessed in-sample data with OHLC columns.
-        - out_sample_df (pd.DataFrame): Preprocessed out-sample data with OHLC columns.
-    """
-    # Standardize column names (capitalize first letter)
-    data = data.rename(columns=lambda x: x.capitalize())
-
-    # Convert 'Time' column to datetime and set as index
-    data['Time'] = pd.to_datetime(data['Time'])
-    data = data.sort_values('Time').set_index('Time')
-
-    # Remove duplicates and handle missing values
-    data = data.drop_duplicates()
-    data = data.dropna(subset=['Open', 'High', 'Low', 'Close'])
-
-    # Split into in-sample and out-of-sample
-    split_timestamp = pd.Timestamp(split_date)
-    in_sample = data[data.index < split_timestamp]
-    out_sample = data[data.index >= split_timestamp]
-
-    # Validate data integrity (no missing OHLC values)
-    required_columns = ['Open', 'High', 'Low', 'Close']
-    for df in [in_sample, out_sample]:
-        if not all(col in df.columns for col in required_columns):
-            raise ValueError(f"Missing required columns in data: {required_columns}")
-
-    return in_sample, out_sample
-```
-
-
-| In-sample Data Graph | Out-sample Data Graph |
-|:---------------------------------------:|:---------------------------------------:|
-| ![In-sample Data Graph](images/in_sample_original.png){ width=400 } | ![Out-sample Dynamic Graph](images/out_sample_original.png){ width=400 } |
-
-
-
-## Implementation
-
-### Environment Setup
+## Environment Setup
 
 1. Setup a virtual Python environment:
    ```bash
@@ -200,42 +75,48 @@ def process_split_data(data: pd.DataFrame, split_date='2024-01-01'):
     cd src
     ```
 
-4. Data collection and processing:
-    - The sample data is saved to `in_sample_VN30F1M.csv` and `out_sample_VN30F1M.csv` files.
-    - You can also load data manually by running the 'data_loader.py' script as follows:
-    ```bash
-    python data_loader.py --symbol sym --start_date start --end_date end --split_date split
-    ```
-    - The default values are:
-        - `sym`: 'VN30F1M'
-        - `start`: '2020-01-01'
-        - `end`: '2025-01-01'
-        - `split`: '2024-01-01'
-    - The script will save the data to `in_sample.csv` and `out_sample.csv` files.
+## Data
 
-5. Run the backtesting script:
-   ```bash
-   python backtest.py --data data_file --algo static/dynamic --params params_file
-   ```
-   - The default values are:
-        - `data_file`: 'in_sample.csv'
-        - `params_file`: 'params.json'
+### Data Collection
+- **Data Source**: Historical VN30F1M index data fetched via the `vnstock`, provided by TCBS (Techcom Securities).
+- **Data Type**: Daily OHLC (Open, High, Low, Close) prices.
+- **Data Period**: January 1, 2020, to January 1, 2025.
+  - **In-sample**: 2020-01-01 to 2024-01-01 (for strategy development and optimization).
+  - **Out-of-sample**: 2024-01-01 to 2025-01-01 (for validation on unseen data).
+- **Input Data**: Data is fetched programmatically via the `Vnstock().stock(symbol="VN30F1M", source="TCBS").quote.history()` function for VN30F1M futures.
+- **Output Data**: Processed data stored in pandas DataFrames for analysis and backtesting.
+    - **In-memory**: Stored as pandas DataFrames during script execution for efficient computation and analysis.
+    - **Persistent Storage**: Saved to Excel files (`in_sample_VN30F1M.xlsx`, `out_sample_VN30F1M.xlsx`) for future use and reference.
 
-6. Run the optimization script:
-   ```bash
-   python optimize.py --data data_file --algo static_momentum/dynamic_momentum/static_reversion/dynamic_reversion
-   ```
-    - The default values are:
-    
-          - `data_file`: 'in_sample.csv'
+- The sample data is saved to `in_sample_VN30F1M.csv` and `out_sample_VN30F1M.csv` files.
+- You can also load data manually by running the 'data_loader.py' script as follows:
+```bash
+python data_loader.py --symbol sym --start_date start --end_date end --split_date split
+```
+- `sym`: The symbol of the data (e.g., 'VN30F1M').
+- `start_date`: The start date of the data.
+- `end_date`: The end date of the data.
+- `split_date`: The date to split the data into in-sample and out-of-sample.
+- The default values are:
+    - `sym`: 'VN30F1M'
+    - `start`: '2020-01-01'
+    - `end`: '2025-01-01'
+    - `split`: '2024-01-01'
+- The script will save the data to `in_sample.csv` and `out_sample.csv` files.
 
-7. Run the optimization with Optuna script:
-    ```bash
-    python optimize_optuna.py --data data_file --algo static/dynamic
-    ```
-    - The default values are:
+### Data Processing
+- **Steps**:
+    - Standardize column names.
+    - Convert 'Time' column to datetime and set as index.
+    - Remove duplicates and handle missing values.
+    - Split into in-sample and out-of-sample.
+    - Validate data integrity (no missing OHLC values).
+- **Output**:
+    - In-sample data and Out-sample data with OHLC columns.
 
-          - `data_file`: 'in_sample.csv'
+| In-sample Data Graph | Out-sample Data Graph |
+|:---------------------------------------:|:---------------------------------------:|
+| ![In-sample Data Graph](images/in_sample_original.png){ width=400 } | ![Out-sample Dynamic Graph](images/out_sample_original.png){ width=400 } |
 
 ### Overview
 
@@ -246,7 +127,7 @@ This module implements two trading strategies:
 
 ---
 
-### 1. `algo`: Static Hybrid Strategy
+### 1. `algo`: Non-Dynamic Hybrid Strategy
 
 #### Objective
 Split capital into two sub-portfolios:
@@ -440,6 +321,30 @@ Both functions return a DataFrame with:
 ---
 
 ## In-sample Backtesting
+
+- To run the backtesting script, use the following command:
+```bash
+python backtest.py --data data_file --dynamic true/false --params params_file
+```
+- `data_file`: Name of the data file. This file must be in the csv format and contain the columns 'Time', 'Open', 'High', 'Low', 'Close'.
+- `params_file`: Name of the parameters file. This file must be in the json format and contain the appropriate parameters for the chosen algorithm.
+- `dynamic`: A flag indicating whether to use the dynamic algorithm (true) or the non-dynamic algorithm (false).
+- The default values are:
+    - `data_file`: 'in_sample.csv'
+
+- Example:
+    - To run the in-sample backtesting script with the non-dynamic algorithm:
+
+    ```bash
+    python backtest.py --data in_sample.csv --dynamic false --params non_dynamic_params.json
+    ```
+
+    - To run the in-sample backtesting script with the dynamic algorithm:
+
+    ```bash
+    python backtest.py --data in_sample.csv --dynamic true --params dynamic_params.json
+    ```
+
 ### Parameters
 ```python
 # Non-dynamic Parameters
@@ -486,8 +391,6 @@ REVERSION_ATR_WINDOW = 7
 | 2023-12-27 | 1121.8 | 1126.2 | 1116.9 | 1116.9 | 135934 |
 | 2023-12-28 | 1118.3 | 1135.2 | 1117.0 | 1132.9 | 157595 |
 | 2023-12-29 | 1133.2 | 1139.5 | 1130.9 | 1134.6 | 160159 |
-
-### Step 4 of the Nine-Step
 
 ### In-sample Backtesting Result
 - Non-dynamic algorithm result:
@@ -545,7 +448,31 @@ where:
 - $sharpe$: The Sharpe Ratio of the portfolio
 - $sortino$: The Sortino Ratio of the portfolio
 
-### Original Optimization Result
+## Original Optimization Result
+```bash
+python optimize.py --data data_file --algo trading_algo
+```
+- `data_file`: Name of the data file. This file must be in the csv format and contain the columns 'Time', 'Open', 'High', 'Low', 'Close'.
+- `algo`: The algorithm to optimize. The input must be either `non_dynamic_momentum`, `dynamic_momentum`, `non_dynamic_reversion` or `dynamic_reversion`.
+- The default values are:
+    - `data_file`: 'in_sample.csv'
+- Example:
+    - To run the original optimization script for the non-dynamic momentum algorithm:
+    ```bash
+    python optimize.py --data in_sample.csv --algo non_dynamic_momentum
+    ```
+    - To run the original optimization script for the dynamic momentum algorithm:
+    ```bash
+    python optimize.py --data in_sample.csv --algo dynamic_momentum
+    ```
+    - To run the original optimization script for the non-dynamic reversion algorithm:
+    ```bash
+    python optimize.py --data in_sample.csv --algo non_dynamic_reversion
+    ```
+    - To run the original optimization script for the dynamic reversion algorithm:
+    ```bash
+    python optimize.py --data in_sample.csv --algo dynamic_reversion
+    ```
 ### Parameters
 ```python
 # Non-dynamic Parameters
@@ -614,6 +541,24 @@ REVERSION_ATR_WINDOW = 6
 | **ATR Window** | 1 to 20 | 1 to 20 |
 | **ATR Multiplier** | 0.5 to 10.0 | 0.5 to 10.0 |
 
+- The script to run the optuna optimization is as follow:
+```bash
+python optimize_optuna.py --data data_file --dynamic true/false
+```
+- `data_file`: Name of the data file. This file must be in the csv format and contain the columns 'Time', 'Open', 'High', 'Low', 'Close'.
+- `dynamic`: A flag indicating whether to use the dynamic algorithm (true) or the non-dynamic algorithm (false).
+- The default values are:
+    - `data_file`: 'in_sample.csv'
+- Example:
+    - To run the optuna optimization script for the non-dynamic algorithm:
+    ```bash
+    python optimize_optuna.py --data in_sample.csv --dynamic false
+    ```
+    - To run the optuna optimization script for the dynamic algorithm:
+    ```bash
+    python optimize_optuna.py --data in_sample.csv --dynamic true
+    ```
+
 ### Optimization with Optuna Result
 - Non-dynamic algorithm result:
     - Holding Period Return: 64.53%
@@ -638,6 +583,22 @@ REVERSION_ATR_WINDOW = 6
 ![report](images/18.png)
 
 ## Out-of-sample Backtesting
+- To run the out-sample backtesting script with the non-dynamic algorithm, using the parameters from the original optimization:
+```bash
+python backtest.py --data in_sample.csv --dynamic false --params optimized_non_dynamic_params.json
+```
+- To run the out-sample backtesting script with the dynamic algorithm, using the parameters from the original optimization:
+```bash
+python backtest.py --data in_sample.csv --dynamic true --params optimized_dynamic_params.json
+```
+- To run the out-sample backtesting script with the non-dynamic algorithm, using the parameters from the optuna optimization:
+```bash
+python backtest.py --data in_sample.csv --dynamic false --params optuna_non_dynamic_params.json
+```
+- To run the out-sample backtesting script with the dynamic algorithm, using the parameters from the optuna optimization:
+```bash
+python backtest.py --data in_sample.csv --dynamic true --params optuna_dynamic_params.json
+```
 ### Parameter
 ```python
 # Non-dynamic Parameters
@@ -686,9 +647,7 @@ REVERSION_ATR_WINDOW = 5
 | 2024-12-30 | 1346.8 | 1347.4 | 1342.0 | 1345.2 |  94688 |
 | 2024-12-31 | 1344.9 | 1352.1 | 1344.5 | 1345.5 | 134784 |
 
-### Step 6 of th Nine-Step
-
-### Out-of-sample Backtesting Reuslt
+### Out-of-sample Backtesting Result
 - Non-dynamic optimized result:
     - Holding Period Return: 2.62%
     - Maximum Drawdown: -2.51%
