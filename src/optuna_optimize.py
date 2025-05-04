@@ -59,7 +59,7 @@ if __name__ == "__main__":
     # Load data
     data = pd.read_csv(args.data, index_col=0, parse_dates=True)
 
-    if args.dynamic == 'true':
+    if args.dynamic == 'false':
         study = optuna.create_study(direction='maximize', study_name="opt_VN30F1M")
         study.optimize(lambda t: objective(t, data), n_trials=100000, timeout=600)
     else:

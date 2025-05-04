@@ -634,8 +634,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Optimize a trading strategy using historical data.")
     parser.add_argument('--data', type=str, default='in_sample.csv', help='Path to the CSV file containing OHLC data.')
     parser.add_argument(
-        '--algo', type=str, choices=['static_momentum', 'dynamic_momentum', 'static_reversion', 'dynamic_reversion'], required=True,
-        help='Type of algorithm to run: "static_momentum", "dynamic_momentum", "static_reversion", or "dynamic_reversion".'
+        '--algo', type=str,
+        choices=['non_dynamic_momentum', 'dynamic_momentum', 'non_dynamic_reversion', 'dynamic_reversion'],
+        required=True,
+        help='Type of algorithm to run: "non_dynamic_momentum", "dynamic_momentum", "non_dynamic_reversion", or "dynamic_reversion".'
     )
 
     args = parser.parse_args()
@@ -643,11 +645,11 @@ if __name__ == '__main__':
     # Load data
     data = pd.read_csv(args.data, index_col=0, parse_dates=True)
 
-    if args.algo == 'static_momentum':
+    if args.algo == 'non_dynamic_momentum':
         result = momentum_optimize(data)
     elif args.algo == 'dynamic_momentum':
         result = dynamic_momentum_optimize(data)
-    elif args.algo == 'static_reversion':
+    elif args.algo == 'non_dynamic_reversion':
         result = reversion_optimize(data)
     elif args.algo == 'dynamic_reversion':
         result = dynamic_reversion_optimize(data)

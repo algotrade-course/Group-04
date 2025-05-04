@@ -345,7 +345,7 @@ if __name__ == "__main__":
         params = json.load(f)
 
     # Run selected algorithm
-    if args.dynamic == 'true':
+    if args.dynamic == 'false':
         result = algo(data, **params)
     else: result = dynamic_algo(data, **params)
     
