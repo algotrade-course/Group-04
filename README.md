@@ -407,11 +407,11 @@ REVERSION_ATR_WINDOW = 7
 ![insample report](images/3.png)
 
 - Dynamic algorithm result:
-    - Holding Period Return: 30.13%
-    - Maximum Drawdown: -7.45%
-    - Longest Drawdown Duration: 185 days
-    - Sharpe Ratio: 0.454131
-    - Sortino Ratio: -0.851165
+    - Holding Period Return: 22.64%
+    - Maximum Drawdown: -10.86%
+    - Longest Drawdown Duration: 418 days
+    - Sharpe Ratio: 0.251111
+    - Sortino Ratio: -0.871138
 
 ![insample report](images/4.png)
 ![insample report](images/5.png)
@@ -545,7 +545,7 @@ REVERSION_ATR_WINDOW = 6
 
 - The script to run the optuna optimization is as follow:
 ```bash
-python optimize_optuna.py --data data_file --dynamic true/false
+python optuna_optimize.py --data data_file --dynamic true/false
 ```
 - `data_file`: Name of the data file. This file must be in the csv format and contain the columns 'Time', 'Open', 'High', 'Low', 'Close'.
 - `dynamic`: A flag indicating whether to use the dynamic algorithm (true) or the non-dynamic algorithm (false).
@@ -554,11 +554,11 @@ python optimize_optuna.py --data data_file --dynamic true/false
 - Example:
     - To run the optuna optimization script for the non-dynamic algorithm:
     ```bash
-    python optimize_optuna.py --data in_sample.csv --dynamic false
+    python optuna_optimize.py --data in_sample.csv --dynamic false
     ```
     - To run the optuna optimization script for the dynamic algorithm:
     ```bash
-    python optimize_optuna.py --data in_sample.csv --dynamic true
+    python optuna_optimize.py --data in_sample.csv --dynamic true
     ```
 
 ### Optimization with Optuna Result
@@ -587,19 +587,19 @@ python optimize_optuna.py --data data_file --dynamic true/false
 ## Out-of-sample Backtesting
 - To run the out-sample backtesting script with the non-dynamic algorithm, using the parameters from the original optimization:
 ```bash
-python backtest.py --data in_sample.csv --dynamic false --params optimized_non_dynamic_params.json
+python backtest.py --data out_sample.csv --dynamic false --params optimized_non_dynamic_params.json
 ```
 - To run the out-sample backtesting script with the dynamic algorithm, using the parameters from the original optimization:
 ```bash
-python backtest.py --data in_sample.csv --dynamic true --params optimized_dynamic_params.json
+python backtest.py --data out_sample.csv --dynamic true --params optimized_dynamic_params.json
 ```
 - To run the out-sample backtesting script with the non-dynamic algorithm, using the parameters from the optuna optimization:
 ```bash
-python backtest.py --data in_sample.csv --dynamic false --params optuna_non_dynamic_params.json
+python backtest.py --data out_sample.csv --dynamic false --params optuna_non_dynamic_params.json
 ```
 - To run the out-sample backtesting script with the dynamic algorithm, using the parameters from the optuna optimization:
 ```bash
-python backtest.py --data in_sample.csv --dynamic true --params optuna_dynamic_params.json
+python backtest.py --data out_sample.csv --dynamic true --params optuna_dynamic_params.json
 ```
 ### Parameter
 ```python
