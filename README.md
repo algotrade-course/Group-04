@@ -12,7 +12,6 @@ To address this, two algorithmic strategies are developed. The original strategy
 
 Preliminary results show that both strategies yield positive returns, with the dynamic variant demonstrating superior performance due to its responsiveness to market volatility. Optimized parameters enhance profitability, though performance varies with market conditions, suggesting potential for further improvements through adaptive techniques.
 
-
 ## Related Work
 
 The development of systematic trading strategies for financial instruments like futures has long been a cornerstone of quantitative finance. This project leverages established principles from technical analysis, futures trading, and algorithmic backtesting, applying them to the VN30F1M futures contract—a monthly derivative tied to Vietnam’s VN30 index. Here, we outline the foundational concepts and prior work that inform our approach, setting the stage for the project’s contributions.
@@ -25,6 +24,7 @@ Technical analysis uses historical price and volume data to predict market movem
 These indicators are often applied individually or in basic pairs. This project, however, integrates MACD for trend detection, RSI for momentum confirmation, and ATR for risk management, creating a more comprehensive framework for trading signals and position sizing.
 
 ## Trading Hypotheses
+
 - Our initial asset is set at 200,000,000 VND.
 - We aim to smooth out the equity curve and reduce drawdowns with our algorithm.
 - Considering the two strategies below:
@@ -80,6 +80,7 @@ These indicators are often applied individually or in basic pairs. This project,
 ## Data
 
 ### Data Collection
+
 - **Data Source**: Historical VN30F1M index data fetched via the `vnstock`, provided by TCBS (Techcom Securities).
 - **Data Type**: Daily OHLC (Open, High, Low, Close) prices.
 - **Data Period**: January 1, 2020, to January 1, 2025.
@@ -107,6 +108,7 @@ These indicators are often applied individually or in basic pairs. This project,
 - The script will save the data to `in_sample.csv` and `out_sample.csv` files.
 
 ### Data Processing
+
 - **Steps**:
     - Standardize column names.
     - Convert 'Time' column to datetime and set as index.
@@ -123,7 +125,6 @@ These indicators are often applied individually or in basic pairs. This project,
 ### Overview
 
 This module implements two trading strategies:
-
 - `algo`: A **basic hybrid strategy** combining Momentum and Mean Reversion with fixed rules.
 - `dynamic_algo`: An **improved version** of `algo` with **adaptive ATR-based risk management**.
 
@@ -132,6 +133,7 @@ This module implements two trading strategies:
 ### 1. `algo`: Non-Dynamic Hybrid Strategy
 
 #### Objective
+
 Split capital into two sub-portfolios:
 - One follows a **Momentum strategy**.
 - One follows a **Mean Reversion strategy**.
@@ -143,6 +145,7 @@ Each strategy uses **MACD**, **RSI**, and **ATR** to trigger trades and manage r
 #### Step-by-Step Breakdown
 
 ##### **Step 1: Initialization**
+
 ```python
 cash = ASSET_VALUE
 holdings_momentum = []
@@ -157,6 +160,7 @@ holdings_reversion = []
 ##### **Step 2: Calculate Technical Indicators**
 
 ###### For Momentum Strategy:
+
 ```python
 data['MACD_diff_mom'] = ta.trend.macd_diff(...)
 data['RSI_mom'] = ta.momentum.rsi(...)
@@ -167,6 +171,7 @@ data['ATR_mom'] = ta.volatility.average_true_range(...)
 - **ATR**: volatility estimate, used to set stop-loss/take-profit ranges.
 
 ###### For Reversion Strategy:
+
 ```python
 data['MACD_diff_rev'] = ta.trend.macd_diff(...)
 data['RSI_rev'] = ta.momentum.rsi(...)
@@ -177,6 +182,7 @@ data['ATR_rev'] = ta.volatility.average_true_range(...)
 ---
 
 ##### **Step 3: Loop Through Time**
+
 ```python
 for i in range(1, len(data)):
     row = data.iloc[i]
@@ -189,6 +195,7 @@ We iterate over each row (i.e., each time step) to check conditions and manage t
 ##### **Step 4: Manage Open Positions**
 
 ###### Closing Rules:
+
 - Sell (or cover short) when:
   - Take-profit is reached.
   - Stop-loss is triggered.
@@ -206,6 +213,7 @@ Each position is reviewed. If conditions are met, we close the trade and update 
 ---
 
 ##### **Step 5: Compute Portfolio Value**
+
 ```python
 total_unrealized = ...
 trading_data.loc[date, 'Asset'] = cash + total_unrealized
@@ -218,6 +226,7 @@ trading_data.loc[date, 'Asset'] = cash + total_unrealized
 ##### **Step 6: Open New Positions If None Are Open**
 
 ###### Momentum Entry:
+
 ```python
 if row['MACD_diff_mom'] > 0 and RSI is in buy zone:
     holdings_momentum.append((..., 'LONG', ...))
@@ -228,6 +237,7 @@ elif row['MACD_diff_mom'] < 0 and RSI is in sell zone:
 - Sell short when negative momentum is confirmed.
 
 ###### Reversion Entry:
+
 ```python
 if row['MACD_diff_rev'] > 0 and RSI < 30:
     holdings_reversion.append((..., 'LONG', ...))
@@ -241,6 +251,7 @@ elif row['MACD_diff_rev'] < 0 and RSI > 70:
 ---
 
 ##### **Step 7: Compute Daily Returns**
+
 ```python
 trading_data['Return'] = trading_data['Asset'].pct_change()
 ```
@@ -251,6 +262,7 @@ trading_data['Return'] = trading_data['Asset'].pct_change()
 ### 2. `dynamic_algo`: Adaptive Hybrid Strategy
 
 #### Objective
+
 Enhance the original strategy by making **ATR multipliers dynamic**, adapting to **recent volatility changes**.
 
 ---
@@ -268,6 +280,7 @@ Enhance the original strategy by making **ATR multipliers dynamic**, adapting to
 #### Step-by-Step Breakdown (Differences Only)
 
 ##### **Step 2 (Updated): Compute Two ATRs for Each Strategy**
+
 ```python
 data['ATR_mom_short'] = ta.volatility.average_true_range(..., window=10)
 data['ATR_mom_long'] = ta.volatility.average_true_range(..., window=20)
@@ -282,6 +295,7 @@ data['ATR_rev_long'] = ta.volatility.average_true_range(..., window=14)
 ---
 
 ##### **Step 3.1: Calculate Dynamic Multipliers**
+
 ```python
 if row['ATR_mom_short'] > row['ATR_mom_long']:
     momentum_atr_multiplier = 3.0
@@ -342,7 +356,9 @@ Both functions return a DataFrame with:
         ```bash
         python backtest.py --data in_sample.csv --dynamic true --params dynamic_params.json
         ```
+
 ### Parameters
+
 ```python
 # Non-dynamic Parameters
 MOMENTUM_FAST_EMA = 10
@@ -374,6 +390,7 @@ REVERSION_SIGNAL_EMA = 5
 REVERSION_RSI_WINDOW = 10
 REVERSION_ATR_WINDOW = 7
 ```
+
 ### Data
 | Time       | Open   | High   | Low    | Close  | Volume |
 |------------|--------|--------|--------|--------|--------|
@@ -390,6 +407,7 @@ REVERSION_ATR_WINDOW = 7
 | 2023-12-29 | 1133.2 | 1139.5 | 1130.9 | 1134.6 | 160159 |
 
 ### In-sample Backtesting Result
+
 - Non-dynamic algorithm result:
     - Holding Period Return: 28.74%
     - Maximum Drawdown: -7.53%
@@ -412,8 +430,8 @@ REVERSION_ATR_WINDOW = 7
 ![insample report](images/5.png)
 ![insample report](images/6.png)
 
-
 ## Original Optimization
+
 - We implement optimization by manually doing a grid search loop through every possible set of values for each parameters.
 - Each strategy has their own set of parameters, as stated below:
     - MACD: `Fast EMA Window`, `Slow EMA Window`, `EMA Signal Window`
@@ -436,16 +454,17 @@ REVERSION_ATR_WINDOW = 7
 - Since each algorithm has more than 10 parameters and most of them has the range of about 5 to 10 values, doing grid search for both strategy at the same time is not possible. Hence, we decide to optimize each strategy independently, then combine the best parameters of each strategy into a single set of best parameters for each algorithm.
 - During optimization, our loss function is defined as follow:
 
-$\displaystyle y = hpr + \frac{mdd}{10} - \frac{ldd}{100} + \left(\frac{sharpe + sortino}{2}\right) ^ 3$
+    $\displaystyle y = hpr + \frac{mdd}{10} - \frac{ldd}{100} + \left(\frac{sharpe + sortino}{2}\right) ^ 3$
 
-where:
-- $hpr$: The Holding Period Return of the portfolio
-- $mdd$: The Maximum Drawdown of the portfolio
-- $ldd$: The Longest Drawdown of the portfolio
-- $sharpe$: The Sharpe Ratio of the portfolio
-- $sortino$: The Sortino Ratio of the portfolio
+    where:
+    - $hpr$: The Holding Period Return of the portfolio
+    - $mdd$: The Maximum Drawdown of the portfolio
+    - $ldd$: The Longest Drawdown of the portfolio
+    - $sharpe$: The Sharpe Ratio of the portfolio
+    - $sortino$: The Sortino Ratio of the portfolio
 
 ## Original Optimization Result
+
 - To run the original optimization script:
     ```bash
     python optimize.py --data data_file --algo trading_algo
@@ -471,7 +490,9 @@ where:
         ```bash
         python optimize.py --data in_sample.csv --algo dynamic_reversion
         ```
+
 ### Parameters
+
 ```python
 # Non-dynamic Parameters
 MOMENTUM_FAST_EMA = 8
@@ -526,6 +547,7 @@ REVERSION_ATR_WINDOW = 6
 ![report](images/12.png)
 
 ## Optimization with Optuna
+
 - For this part, our objective is simply the final net asset value.
 - The details for the range of each parameter, correspondng to each strategy is specified in the table below:
 
@@ -558,6 +580,7 @@ REVERSION_ATR_WINDOW = 6
         ```
 
 ### Optimization with Optuna Result
+
 - Non-dynamic algorithm result:
     - Holding Period Return: 64.53%
     - Maximum Drawdown: -10.03%
@@ -581,6 +604,7 @@ REVERSION_ATR_WINDOW = 6
 ![report](images/18.png)
 
 ## Out-of-sample Backtesting
+
 - To run the out-sample backtesting script:
     - Using the parameters from the original optimization:
         - With the non-dynamic algorithm:
@@ -600,7 +624,9 @@ REVERSION_ATR_WINDOW = 6
             ```bash
             python backtest.py --data out_sample.csv --dynamic true --params optuna_dynamic_params.json
             ```
+
 ### Parameter
+
 ```python
 # Non-dynamic Parameters
 MOMENTUM_FAST_EMA = 3
@@ -634,6 +660,7 @@ REVERSION_ATR_WINDOW = 5
 ```
 
 ### Data
+
 | Time       | Open   | High   | Low    | Close  | Volume |
 |------------|--------|--------|--------|--------|--------|
 | 2024-01-02 | 1138.5 | 1141.8 | 1131.0 | 1133.5 | 167307 |
@@ -649,6 +676,7 @@ REVERSION_ATR_WINDOW = 5
 | 2024-12-31 | 1344.9 | 1352.1 | 1344.5 | 1345.5 | 134784 |
 
 ### Out-of-sample Backtesting Result
+
 - Non-dynamic optimized result:
     - Holding Period Return: 2.62%
     - Maximum Drawdown: -2.51%
@@ -693,8 +721,9 @@ REVERSION_ATR_WINDOW = 5
 ![outsample report](images/29.png)
 ![outsample report](images/30.png)
 
-
 ## Reference
+
+- Algotrade. [Thực tiễn giao dịch thuật toán tại thị trường chứng khoán Việt Nam](https://hub.algotrade.vn/knowledge-hub/thuc-tien-giao-dich-thuat-toan-tai-thi-truong-chung-khoan-viet-nam/). Nhà xuất bản Thế Giới.
 - Appel, G. (2005). [Technical Analysis: Power Tools for Active Investors](https://dl.acm.org/doi/book/10.5555/1408581). FT Press.
 - Wilder, J. W. (1978). [New Concepts in Technical Trading Systems](https://archive.org/details/newconceptsintec00wild).
 - Truong, D. L., & Friday, H. S. (2021). [The Impact of the Introduction of Index Futures on the Daily Returns Anomaly in the Ho Chi Minh Stock Exchange](https://www.mdpi.com/2227-7072/9/3/43). *International Journal of Financial Studies*, 9(3), 43.
