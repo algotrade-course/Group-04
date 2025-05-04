@@ -92,13 +92,13 @@ These indicators are often applied individually or in basic pairs. This project,
 
 - The sample data is saved to `in_sample_VN30F1M.csv` and `out_sample_VN30F1M.csv` files.
 - You can also load data manually by running the 'data_loader.py' script as follows:
-```bash
-python data_loader.py --symbol sym --start_date start --end_date end --split_date split
-```
-- `sym`: The symbol of the data (e.g., 'VN30F1M').
-- `start_date`: The start date of the data.
-- `end_date`: The end date of the data.
-- `split_date`: The date to split the data into in-sample and out-of-sample.
+    ```bash
+    python data_loader.py --symbol sym --start_date start --end_date end --split_date split
+    ```
+    - `sym`: The symbol of the data (e.g., 'VN30F1M').
+    - `start_date`: The start date of the data.
+    - `end_date`: The end date of the data.
+    - `split_date`: The date to split the data into in-sample and out-of-sample.
 - The default values are:
     - `sym`: 'VN30F1M'
     - `start`: '2020-01-01'
@@ -324,29 +324,24 @@ Both functions return a DataFrame with:
 
 ## In-sample Backtesting
 
-- To run the backtesting script, use the following command:
-```bash
-python backtest.py --data data_file --dynamic true/false --params params_file
-```
-- `data_file`: Name of the data file. This file must be in the csv format and contain the columns 'Time', 'Open', 'High', 'Low', 'Close'.
-- `params_file`: Name of the parameters file. This file must be in the json format and contain the appropriate parameters for the chosen algorithm.
-- `dynamic`: A flag indicating whether to use the dynamic algorithm (true) or the non-dynamic algorithm (false).
+- To run the backtesting script:
+    ```bash
+    python backtest.py --data data_file --dynamic true/false --params params_file
+    ```
+    - `data_file`: Name of the data file. This file must be in the csv format and contain the columns 'Time', 'Open', 'High', 'Low', 'Close'.
+    - `params_file`: Name of the parameters file. This file must be in the json format and contain the appropriate parameters for the chosen algorithm.
+    - `dynamic`: A flag indicating whether to use the dynamic algorithm (true) or the non-dynamic algorithm (false).
 - The default values are:
     - `data_file`: 'in_sample.csv'
-
-- Example:
-    - To run the in-sample backtesting script with the non-dynamic algorithm:
-
-    ```bash
-    python backtest.py --data in_sample.csv --dynamic false --params non_dynamic_params.json
-    ```
-
-    - To run the in-sample backtesting script with the dynamic algorithm:
-
-    ```bash
-    python backtest.py --data in_sample.csv --dynamic true --params dynamic_params.json
-    ```
-
+- Example: To run the in-sample backtesting script:
+    - With the non-dynamic algorithm:
+        ```bash
+        python backtest.py --data in_sample.csv --dynamic false --params non_dynamic_params.json
+        ```
+    - With the dynamic algorithm:
+        ```bash
+        python backtest.py --data in_sample.csv --dynamic true --params dynamic_params.json
+        ```
 ### Parameters
 ```python
 # Non-dynamic Parameters
@@ -451,30 +446,31 @@ where:
 - $sortino$: The Sortino Ratio of the portfolio
 
 ## Original Optimization Result
-```bash
-python optimize.py --data data_file --algo trading_algo
-```
-- `data_file`: Name of the data file. This file must be in the csv format and contain the columns 'Time', 'Open', 'High', 'Low', 'Close'.
-- `algo`: The algorithm to optimize. The input must be either `non_dynamic_momentum`, `dynamic_momentum`, `non_dynamic_reversion` or `dynamic_reversion`.
+- To run the original optimization script:
+    ```bash
+    python optimize.py --data data_file --algo trading_algo
+    ```
+    - `data_file`: Name of the data file. This file must be in the csv format and contain the columns 'Time', 'Open', 'High', 'Low', 'Close'.
+    - `algo`: The algorithm to optimize. The input must be either `non_dynamic_momentum`, `dynamic_momentum`, `non_dynamic_reversion` or `dynamic_reversion`.
 - The default values are:
     - `data_file`: 'in_sample.csv'
-- Example:
-    - To run the original optimization script for the non-dynamic momentum algorithm:
-    ```bash
-    python optimize.py --data in_sample.csv --algo non_dynamic_momentum
-    ```
-    - To run the original optimization script for the dynamic momentum algorithm:
-    ```bash
-    python optimize.py --data in_sample.csv --algo dynamic_momentum
-    ```
-    - To run the original optimization script for the non-dynamic reversion algorithm:
-    ```bash
-    python optimize.py --data in_sample.csv --algo non_dynamic_reversion
-    ```
-    - To run the original optimization script for the dynamic reversion algorithm:
-    ```bash
-    python optimize.py --data in_sample.csv --algo dynamic_reversion
-    ```
+- Example: To run the original optimization script:
+    - For the non-dynamic momentum algorithm:
+        ```bash
+        python optimize.py --data in_sample.csv --algo non_dynamic_momentum
+        ```
+    - For the dynamic momentum algorithm:
+        ```bash
+        python optimize.py --data in_sample.csv --algo dynamic_momentum
+        ```
+    - For the non-dynamic reversion algorithm:
+        ```bash
+        python optimize.py --data in_sample.csv --algo non_dynamic_reversion
+        ```
+    - For the dynamic reversion algorithm:
+        ```bash
+        python optimize.py --data in_sample.csv --algo dynamic_reversion
+        ```
 ### Parameters
 ```python
 # Non-dynamic Parameters
@@ -544,22 +540,22 @@ REVERSION_ATR_WINDOW = 6
 | **ATR Multiplier** | 0.5 to 10.0 | 0.5 to 10.0 |
 
 - The script to run the optuna optimization is as follow:
-```bash
-python optuna_optimize.py --data data_file --dynamic true/false
-```
-- `data_file`: Name of the data file. This file must be in the csv format and contain the columns 'Time', 'Open', 'High', 'Low', 'Close'.
-- `dynamic`: A flag indicating whether to use the dynamic algorithm (true) or the non-dynamic algorithm (false).
+    ```bash
+    python optuna_optimize.py --data data_file --dynamic true/false
+    ```
+    - `data_file`: Name of the data file. This file must be in the csv format and contain the columns 'Time', 'Open', 'High', 'Low', 'Close'.
+    - `dynamic`: A flag indicating whether to use the dynamic algorithm (true) or the non-dynamic algorithm (false).
 - The default values are:
     - `data_file`: 'in_sample.csv'
-- Example:
-    - To run the optuna optimization script for the non-dynamic algorithm:
-    ```bash
-    python optuna_optimize.py --data in_sample.csv --dynamic false
-    ```
-    - To run the optuna optimization script for the dynamic algorithm:
-    ```bash
-    python optuna_optimize.py --data in_sample.csv --dynamic true
-    ```
+- Example: To run the optuna optimization script:
+    -  For the non-dynamic algorithm:
+        ```bash
+        python optuna_optimize.py --data in_sample.csv --dynamic false
+        ```
+    - For the dynamic algorithm:
+        ```bash
+        python optuna_optimize.py --data in_sample.csv --dynamic true
+        ```
 
 ### Optimization with Optuna Result
 - Non-dynamic algorithm result:
@@ -585,22 +581,25 @@ python optuna_optimize.py --data data_file --dynamic true/false
 ![report](images/18.png)
 
 ## Out-of-sample Backtesting
-- To run the out-sample backtesting script with the non-dynamic algorithm, using the parameters from the original optimization:
-```bash
-python backtest.py --data out_sample.csv --dynamic false --params optimized_non_dynamic_params.json
-```
-- To run the out-sample backtesting script with the dynamic algorithm, using the parameters from the original optimization:
-```bash
-python backtest.py --data out_sample.csv --dynamic true --params optimized_dynamic_params.json
-```
-- To run the out-sample backtesting script with the non-dynamic algorithm, using the parameters from the optuna optimization:
-```bash
-python backtest.py --data out_sample.csv --dynamic false --params optuna_non_dynamic_params.json
-```
-- To run the out-sample backtesting script with the dynamic algorithm, using the parameters from the optuna optimization:
-```bash
-python backtest.py --data out_sample.csv --dynamic true --params optuna_dynamic_params.json
-```
+- To run the out-sample backtesting script:
+    - Using the parameters from the original optimization:
+        - With the non-dynamic algorithm:
+            ```bash
+            python backtest.py --data out_sample.csv --dynamic false --params optimized_non_dynamic_params.json
+            ```
+        - With the dynamic algorithm:
+            ```bash
+            python backtest.py --data out_sample.csv --dynamic true --params optimized_dynamic_params.json
+            ```
+    - Using the parameters from the optuna optimization:
+        - With the non-dynamic algorithm:
+            ```bash
+            python backtest.py --data out_sample.csv --dynamic false --params optuna_non_dynamic_params.json
+            ```
+        - With the dynamic algorithm:
+            ```bash
+            python backtest.py --data out_sample.csv --dynamic true --params optuna_dynamic_params.json
+            ```
 ### Parameter
 ```python
 # Non-dynamic Parameters
