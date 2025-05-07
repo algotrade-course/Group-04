@@ -69,7 +69,7 @@ These indicators are often applied individually or in basic pairs. This project,
 
 2. Install required libraries:
    ```bash
-   pip install --upgrade pip
+   pip install pip==24.0
    pip install -r requirements.txt
    ```
 
@@ -122,6 +122,23 @@ These indicators are often applied individually or in basic pairs. This project,
 | In-sample Data Graph | Out-sample Data Graph |
 |:---------------------------------------:|:---------------------------------------:|
 | ![In-sample Data Graph](images/in_sample_original.png){ width=400 } | ![Out-sample Dynamic Graph](images/out_sample_original.png){ width=400 } |
+
+### Data Visualization
+
+- To visualize the data, we use the `visualize.py` script:
+    ```bash
+    python visualize.py --file data_file
+    ```
+    - `data_file`: The name of the data file. This file must be in the csv format and contain the columns 'Time', 'Open', 'High', 'Low', 'Close'.
+- Example: To visualize:
+    - The in-sample data:
+        ```bash
+        python visualize.py --file in_sample.csv
+        ```
+    - The out-sample data:
+        ```bash
+        python visualize.py --file out_sample.csv
+        ```
 
 ### Overview
 

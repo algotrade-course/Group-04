@@ -7,6 +7,7 @@ from utils import (
     ASSET_VALUE, TAX, MARGIN_RATIO, ACCOUNT_RATIO, MULTIPLIER,
     holding_period_returns, maximum_drawdown, longest_drawdown, sharpe_ratio, sortino_ratio
 )
+from visualize import visualize_trades
 
 def algo(
     data: pd.DataFrame,
@@ -349,6 +350,8 @@ if __name__ == "__main__":
         result = algo(data, **params)
     else: result = dynamic_algo(data, **params)
     
+    visualize_trades(result)
+
     print("\n=== Backtest Performance Metrics ===")
 
     hpr = holding_period_returns(result)
